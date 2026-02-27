@@ -7,7 +7,7 @@ function SongCard({ song }) {
   const [liked, setLiked] = useState(false);
 
   const handleLike = (e) => {
-    e.stopPropagation(); // Prevent card click (play)
+    e.stopPropagation();
     setLiked(!liked);
   };
 
@@ -20,7 +20,7 @@ function SongCard({ song }) {
       {/* Song Image */}
       <div className="relative">
         <img
-          src={song.image}
+          src={song.cover_image_url}   
           alt={song.title}
           className="w-full h-36 object-cover rounded-md"
         />
@@ -29,7 +29,7 @@ function SongCard({ song }) {
         <button
           className="absolute bottom-2 right-2 bg-green-500 
           p-2 rounded-full opacity-0 group-hover:opacity-100 
-          transition"
+          transition text-white"
         >
           ▶
         </button>

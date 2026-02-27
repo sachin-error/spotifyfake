@@ -9,11 +9,14 @@ function Home() {
 
   // 🔥 Fetch songs from Django backend
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/songs/")
-      .then((res) => res.json())
-      .then((data) => setSongs(data))
-      .catch((err) => console.error("Error fetching songs:", err));
-  }, []);
+  fetch("http://127.0.0.1:8000/api/songs/")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("API DATA:", data);
+      setSongs(data);
+    })
+    .catch((err) => console.error(err));
+}, []);
 
   // Filter by language (make sure backend has `lang` field)
   const tamilSongs = songs.filter((song) => song.lang === "tamil");

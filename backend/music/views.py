@@ -4,5 +4,5 @@ from .serializers import SongSerializer
 
 
 class SongListView(generics.ListAPIView):
-    queryset = Song.objects.all().order_by('-uploaded_at')
+    queryset = Song.objects.all()
     serializer_class = SongSerializer

@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'cloudinary',
+    'cloudinary_storage',
     'music',
 ]
 
@@ -120,3 +122,22 @@ CORS_ALLOW_ALL_ORIGINS = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+
+# ---------------------------
+# 🔥 CLOUDINARY CONFIGURATION
+# ---------------------------
+
+import cloudinary
+
+cloudinary.config(
+    cloud_name = "dbx6b3wwl",
+    api_key = "864751252213438",
+    api_secret = "SJvd48T-eZrlZcdAdQDy-xKkx3k",
+    secure = True
+)
+
+# Use Cloudinary for media storage
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
