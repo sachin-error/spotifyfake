@@ -9,36 +9,185 @@ export function PlayerProvider({ children }) {
   const [likedSongs, setLikedSongs] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const [playlists, setPlaylists] = useState([
+    { id: 1, name: "My Playlist 1", songs: [] },
+    { id: 2, name: "Chill Hits", songs: [] },
+  ]);
+
+  /* =========================
+     🔍 RECENT SEARCH SYSTEM (NEW)
+  ========================= */
+
+  const [recentSearches, setRecentSearches] = useState([]);
+
+  const addRecentSearch = (song) => {
+    setRecentSearches((prev) => {
+      const filtered = prev.filter((s) => s.id !== song.id);
+      const updated = [song, ...filtered];
+      return updated.slice(0, 4); // only 4 items
+    });
+  };
+
+  /* =========================
+     🔔 GLOBAL TOAST SYSTEM
+  ========================= */
+
+  const [toast, setToast] = useState("");
+
+  const showToast = (message) => {
+    setToast(message);
+    setTimeout(() => setToast(""), 2000);
+  };
+
+  /* =========================
+     🎵 PLAY SONG
+  ========================= */
+
   const playSong = (song) => {
-    if (!audioRef.current) return;
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // Restart if same song
+    if (currentSong?.id === song.id) {
+      audio.currentTime = 0;
+      audio.play();
+      return;
+    }
 
     setCurrentSong(song);
+    addRecentSearch(song); // 🔥 Add to recent search
   };
+
+  /* =========================
+     ⏯ TOGGLE PLAY / PAUSE
+  ========================= */
 
   const togglePlay = () => {
-    if (!audioRef.current) return;
+    const audio = audioRef.current;
+    if (!audio) return;
 
     if (isPlaying) {
-      audioRef.current.pause();
+      audio.pause();
     } else {
-      audioRef.current.play();
+      audio.play();
     }
   };
+
+  /* =========================
+     🔊 SET VOLUME
+  ========================= */
 
   const setVolume = (value) => {
-    if (audioRef.current) {
-      audioRef.current.volume = value;
-    }
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.volume = value;
   };
 
-  // Auto play when song changes
+  /* =========================
+     ❤️ LIKE SYSTEM
+  ========================= */
+
+  const toggleLike = (song) => {
+    setLikedSongs((prev) => {
+      const exists = prev.find((s) => s.id === song.id);
+      return exists
+        ? prev.filter((s) => s.id !== song.id)
+        : [...prev, song];
+    });
+  };
+
+  /* =========================
+     📁 CREATE PLAYLIST
+  ========================= */
+
+  const createPlaylist = (name) => {
+    if (!name.trim()) return;
+
+    const newPlaylist = {
+      id: Date.now(),
+      name,
+      songs: [],
+    };
+
+    setPlaylists((prev) => [...prev, newPlaylist]);
+    showToast("🎉 Playlist created successfully");
+  };
+
+  /* =========================
+     🗑 DELETE PLAYLIST
+  ========================= */
+
+  const deletePlaylist = (id) => {
+    setPlaylists((prev) => prev.filter((pl) => pl.id !== id));
+    showToast("🗑 Playlist deleted");
+  };
+
+  /* =========================
+     ➕ ADD SONG TO PLAYLIST
+  ========================= */
+
+  const addSongToPlaylist = (playlistId, song) => {
+    let added = false;
+
+    setPlaylists((prev) =>
+      prev.map((pl) => {
+        if (pl.id === playlistId) {
+          const exists = pl.songs.find(
+            (s) => s.id === song.id
+          );
+
+          if (exists) return pl;
+
+          added = true;
+
+          return {
+            ...pl,
+            songs: [...pl.songs, song],
+          };
+        }
+        return pl;
+      })
+    );
+
+  };
+
+  /* =========================
+     ➖ REMOVE SONG FROM PLAYLIST
+  ========================= */
+
+  const removeSongFromPlaylist = (playlistId, songId) => {
+    setPlaylists((prev) =>
+      prev.map((pl) =>
+        pl.id === playlistId
+          ? {
+              ...pl,
+              songs: pl.songs.filter(
+                (s) => s.id !== songId
+              ),
+            }
+          : pl
+      )
+    );
+
+    showToast("❌ Song removed from playlist");
+  };
+
+  /* =========================
+     🎧 AUTO PLAY WHEN SONG CHANGES
+  ========================= */
+
   useEffect(() => {
-    if (currentSong && audioRef.current) {
-      audioRef.current.play().catch(console.error);
-    }
+    const audio = audioRef.current;
+    if (!audio || !currentSong) return;
+
+    audio.src = currentSong.audio_url;
+    audio.play().catch(console.error);
   }, [currentSong]);
 
-  // Sync play state
+  /* =========================
+     🔄 SYNC PLAY STATE
+  ========================= */
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -58,15 +207,6 @@ export function PlayerProvider({ children }) {
     };
   }, []);
 
-  const toggleLike = (song) => {
-    setLikedSongs((prev) => {
-      const exists = prev.find((s) => s.id === song.id);
-      return exists
-        ? prev.filter((s) => s.id !== song.id)
-        : [...prev, song];
-    });
-  };
-
   return (
     <PlayerContext.Provider
       value={{
@@ -77,10 +217,33 @@ export function PlayerProvider({ children }) {
         toggleLike,
         likedSongs,
         setVolume,
+        playlists,
+        createPlaylist,
+        deletePlaylist,
+        addSongToPlaylist,
+        removeSongFromPlaylist,
+        showToast,
+        recentSearches,      // 🔥 Exported
+        addRecentSearch,     // 🔥 Exported
         audioRef,
       }}
     >
       {children}
+
+      {/* 🌍 Hidden Audio */}
+      <audio ref={audioRef} />
+
+      {/* 🌟 GLASS TOAST */}
+      {toast && (
+        <div
+          className="fixed top-18 left-1/2 -translate-x-1/2 z-[9999]
+          backdrop-blur-lg bg-white/10 border border-white/20
+          text-white px-8 py-4 rounded-2xl shadow-2xl
+          animate-slideDown"
+        >
+          {toast}
+        </div>
+      )}
     </PlayerContext.Provider>
   );
 }
