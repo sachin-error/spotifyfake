@@ -117,12 +117,14 @@ function Home() {
   const { recentlyPlayed = [] } = useContext(PlayerContext);
   const [songs, setSongs] = useState([]);
 
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/songs/")
-      .then((res) => res.json())
-      .then((data) => setSongs(data))
-      .catch((err) => console.error(err));
-  }, []);
+  const API = import.meta.env.VITE_API_URL;
+
+useEffect(() => {
+  fetch(`${API}/api/songs/`)
+    .then((res) => res.json())
+    .then((data) => setSongs(data))
+    .catch((err) => console.error(err));
+}, []);
 
   const tamilSongs = songs.filter((s) => s.lang === "tamil");
   const malayalamSongs = songs.filter((s) => s.lang === "malayalam");
