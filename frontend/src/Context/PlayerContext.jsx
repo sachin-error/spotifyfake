@@ -34,6 +34,22 @@ export function PlayerProvider({ children }) {
   );
 };
 
+const createPlaylist = (name) => {
+  const newPlaylist = {
+    id: Date.now(),
+    name,
+    songs: [],
+  };
+
+  setPlaylists((prev) => [...prev, newPlaylist]);
+};
+
+const deletePlaylist = (playlistId) => {
+  setPlaylists((prev) =>
+    prev.filter((pl) => pl.id !== playlistId)
+  );
+};
+
 const removeSongFromPlaylist = (playlistId, songId) => {
   setPlaylists((prev) =>
     prev.map((pl) =>
@@ -192,6 +208,8 @@ const removeSongFromPlaylist = (playlistId, songId) => {
         addRecentSearch,
         addSongToPlaylist,
         removeSongFromPlaylist,
+        createPlaylist,     
+        deletePlaylist  
       }}
     >
       {children}
