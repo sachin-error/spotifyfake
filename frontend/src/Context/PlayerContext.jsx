@@ -14,53 +14,97 @@ export function PlayerProvider({ children }) {
     { id: 2, name: "Chill Hits", songs: [] },
   ]);
 
+  const addSongToPlaylist = (playlistId, song) => {
+  setPlaylists((prev) =>
+    prev.map((pl) => {
+      if (pl.id === playlistId) {
+        const exists = pl.songs.find(
+          (s) => s.id === song.id
+        );
+
+        if (exists) return pl; // prevent duplicate
+
+        return {
+          ...pl,
+          songs: [...pl.songs, song],
+        };
+      }
+      return pl;
+    })
+  );
+};
+
+const removeSongFromPlaylist = (playlistId, songId) => {
+  setPlaylists((prev) =>
+    prev.map((pl) =>
+      pl.id === playlistId
+        ? {
+            ...pl,
+            songs: pl.songs.filter(
+              (s) => s.id !== songId
+            ),
+          }
+        : pl
+    )
+  );
+};
+
+
   /* =========================
-     🔍 RECENT SEARCH SYSTEM (NEW)
+     QUEUE SYSTEM
   ========================= */
 
-  const [recentSearches, setRecentSearches] = useState([]);
+  const [songQueue, setSongQueue] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const addRecentSearch = (song) => {
-    setRecentSearches((prev) => {
-      const filtered = prev.filter((s) => s.id !== song.id);
-      const updated = [song, ...filtered];
-      return updated.slice(0, 4); // only 4 items
-    });
-  };
-
-  /* =========================
-     🔔 GLOBAL TOAST SYSTEM
-  ========================= */
-
-  const [toast, setToast] = useState("");
-
-  const showToast = (message) => {
-    setToast(message);
-    setTimeout(() => setToast(""), 2000);
-  };
-
-  /* =========================
-     🎵 PLAY SONG
-  ========================= */
-
-  const playSong = (song) => {
+  const playSong = (song, allSongs = []) => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    // Restart if same song
     if (currentSong?.id === song.id) {
       audio.currentTime = 0;
       audio.play();
       return;
     }
 
+    if (allSongs.length > 0) {
+      setSongQueue(allSongs);
+
+      const index = allSongs.findIndex(
+        (s) => s.id === song.id
+      );
+
+      setCurrentIndex(index !== -1 ? index : 0);
+    }
+
+     addRecentSearch(song);
+
     setCurrentSong(song);
-    addRecentSearch(song); // 🔥 Add to recent search
   };
 
-  /* =========================
-     ⏯ TOGGLE PLAY / PAUSE
-  ========================= */
+  const playNext = () => {
+    if (songQueue.length === 0) return;
+
+    const nextIndex =
+      currentIndex === songQueue.length - 1
+        ? 0
+        : currentIndex + 1;
+
+    setCurrentIndex(nextIndex);
+    setCurrentSong(songQueue[nextIndex]);
+  };
+
+  const playPrevious = () => {
+    if (songQueue.length === 0) return;
+
+    const prevIndex =
+      currentIndex === 0
+        ? songQueue.length - 1
+        : currentIndex - 1;
+
+    setCurrentIndex(prevIndex);
+    setCurrentSong(songQueue[prevIndex]);
+  };
 
   const togglePlay = () => {
     const audio = audioRef.current;
@@ -73,19 +117,11 @@ export function PlayerProvider({ children }) {
     }
   };
 
-  /* =========================
-     🔊 SET VOLUME
-  ========================= */
-
   const setVolume = (value) => {
     const audio = audioRef.current;
     if (!audio) return;
     audio.volume = value;
   };
-
-  /* =========================
-     ❤️ LIKE SYSTEM
-  ========================= */
 
   const toggleLike = (song) => {
     setLikedSongs((prev) => {
@@ -96,84 +132,18 @@ export function PlayerProvider({ children }) {
     });
   };
 
-  /* =========================
-     📁 CREATE PLAYLIST
-  ========================= */
+  const [recentSearches, setRecentSearches] = useState([]);
 
-  const createPlaylist = (name) => {
-    if (!name.trim()) return;
-
-    const newPlaylist = {
-      id: Date.now(),
-      name,
-      songs: [],
-    };
-
-    setPlaylists((prev) => [...prev, newPlaylist]);
-    showToast("🎉 Playlist created successfully");
-  };
+  const addRecentSearch = (song) => {
+  setRecentSearches((prev) => {
+    const filtered = prev.filter((s) => s.id !== song.id);
+    const updated = [song, ...filtered];
+    return updated.slice(0, 4);
+  });
+};
 
   /* =========================
-     🗑 DELETE PLAYLIST
-  ========================= */
-
-  const deletePlaylist = (id) => {
-    setPlaylists((prev) => prev.filter((pl) => pl.id !== id));
-    showToast("🗑 Playlist deleted");
-  };
-
-  /* =========================
-     ➕ ADD SONG TO PLAYLIST
-  ========================= */
-
-  const addSongToPlaylist = (playlistId, song) => {
-    let added = false;
-
-    setPlaylists((prev) =>
-      prev.map((pl) => {
-        if (pl.id === playlistId) {
-          const exists = pl.songs.find(
-            (s) => s.id === song.id
-          );
-
-          if (exists) return pl;
-
-          added = true;
-
-          return {
-            ...pl,
-            songs: [...pl.songs, song],
-          };
-        }
-        return pl;
-      })
-    );
-
-  };
-
-  /* =========================
-     ➖ REMOVE SONG FROM PLAYLIST
-  ========================= */
-
-  const removeSongFromPlaylist = (playlistId, songId) => {
-    setPlaylists((prev) =>
-      prev.map((pl) =>
-        pl.id === playlistId
-          ? {
-              ...pl,
-              songs: pl.songs.filter(
-                (s) => s.id !== songId
-              ),
-            }
-          : pl
-      )
-    );
-
-    showToast("❌ Song removed from playlist");
-  };
-
-  /* =========================
-     🎧 AUTO PLAY WHEN SONG CHANGES
+     AUTO PLAY
   ========================= */
 
   useEffect(() => {
@@ -181,12 +151,9 @@ export function PlayerProvider({ children }) {
     if (!audio || !currentSong) return;
 
     audio.src = currentSong.audio_url;
-    audio.play().catch(console.error);
+    audio.load();
+    audio.play().catch(() => {});
   }, [currentSong]);
-
-  /* =========================
-     🔄 SYNC PLAY STATE
-  ========================= */
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -194,7 +161,7 @@ export function PlayerProvider({ children }) {
 
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
-    const handleEnded = () => setIsPlaying(false);
+    const handleEnded = () => playNext();
 
     audio.addEventListener("play", handlePlay);
     audio.addEventListener("pause", handlePause);
@@ -205,45 +172,30 @@ export function PlayerProvider({ children }) {
       audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, []);
+  }, [currentIndex, songQueue]);
 
   return (
     <PlayerContext.Provider
       value={{
         currentSong,
         playSong,
+        playNext,
+        playPrevious,
         togglePlay,
         isPlaying,
         toggleLike,
         likedSongs,
         setVolume,
         playlists,
-        createPlaylist,
-        deletePlaylist,
+        audioRef,
+        recentSearches,
+        addRecentSearch,
         addSongToPlaylist,
         removeSongFromPlaylist,
-        showToast,
-        recentSearches,      // 🔥 Exported
-        addRecentSearch,     // 🔥 Exported
-        audioRef,
       }}
     >
       {children}
-
-      {/* 🌍 Hidden Audio */}
       <audio ref={audioRef} />
-
-      {/* 🌟 GLASS TOAST */}
-      {toast && (
-        <div
-          className="fixed top-18 left-1/2 -translate-x-1/2 z-[9999]
-          backdrop-blur-lg bg-white/10 border border-white/20
-          text-white px-8 py-4 rounded-2xl shadow-2xl
-          animate-slideDown"
-        >
-          {toast}
-        </div>
-      )}
     </PlayerContext.Provider>
   );
 }

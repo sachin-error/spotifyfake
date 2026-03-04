@@ -1,36 +1,27 @@
-import { useState } from "react";
-import Navbar from "../navbar/Navbar";
-import Sidebar from "../sidebar/Sidebar";
-import Player from "../player/Player";
-
+import NavBar from "../components/common/navbar";
+import Sidebar from "../components/common/sidebar";
+import LeftSidebar from "../components/common/leftsidebar";
+import Player from "../components/common/player";
 function AppLayout({ children }) {
-  const [openSidebar, setOpenSidebar] = useState(false);
-
   return (
-    <div className="h-screen flex flex-col bg-black text-white">
+    <div className="h-screen bg-black overflow-x-hidden">
 
-      {/* NAVBAR */}
-      <Navbar setOpenSidebar={setOpenSidebar} />
+      {/* Navbar */}
+      <NavBar />
 
-      {/* MAIN SECTION */}
-      <div className="flex flex-1 pt-16 overflow-hidden">
+      {/* Left Sidebar */}
+      <LeftSidebar />
 
-        {/* MAIN CONTENT */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 py-6">
-          {children}
-        </div>
+      {/* Right Sidebar */}
+      <Sidebar />
 
-        {/* RIGHT SIDEBAR (Desktop Only) */}
-        <div className="hidden lg:block w-64 border-l border-gray-800">
-          <Sidebar />
-        </div>
-
+      {/* Main Content */}
+      <div className="pt-16 pb-24 md:pl-48 lg:pr-60 h-full overflow-y-auto">
+        {children}
       </div>
 
-      {/* PLAYER */}
-      <div className="h-20 border-t border-gray-800">
-        <Player />
-      </div>
+      {/* Bottom Player */}
+      <Player />
 
     </div>
   );
