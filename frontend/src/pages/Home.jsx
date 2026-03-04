@@ -109,7 +109,7 @@
 // export default Home;
 
 import { useContext, useEffect, useState, useRef } from "react";
-import { PlayerContext } from "../Context/PlayerContext";
+import { PlayerContext } from "../context/PlayerContext";
 import SongCard from "../components/music/SongCard";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 
