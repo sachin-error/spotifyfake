@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
+        default=os.environ.get('postgresql://hackifyuser:aiyIrQhTOEXhU2LXeVxGVaHf4toEDA5G@dpg-d6krb7rh46gs73d54d00-a/hackify')
     )
 }
 
