@@ -41,58 +41,86 @@ function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-
       {error && (
-        <p className="text-red-500 text-sm">{error}</p>
+        <p className="text-red-400 text-xs sm:text-sm">{error}</p>
       )}
 
       {success && (
-        <p className="text-green-500 text-sm">{success}</p>
+        <p className="text-hkf-green text-xs sm:text-sm">{success}</p>
       )}
 
-      <input
-        type="text"
-        name="name"
-        placeholder="Full Name"
-        value={formData.name}
-        onChange={handleChange}
-        className="bg-gray-800 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-      />
+      <div>
+        <label htmlFor="name" className="block text-xs text-hkf-mute mb-1.5">
+          Full name
+        </label>
+        <input
+          id="name"
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          className="w-full bg-black/50 border border-[rgba(0,255,100,.15)] text-white
+          p-2.5 rounded-md text-sm
+          focus:outline-none focus:border-hkf-green focus:shadow-glow transition"
+        />
+      </div>
 
-      <input
-        type="email"
-        name="email"
-        placeholder="Email Address"
-        value={formData.email}
-        onChange={handleChange}
-        className="bg-gray-800 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-      />
+      <div>
+        <label htmlFor="reg-email" className="block text-xs text-hkf-mute mb-1.5">
+          Email
+        </label>
+        <input
+          id="reg-email"
+          type="email"
+          name="email"
+          placeholder="name@gmail.com"
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full bg-black/50 border border-[rgba(0,255,100,.15)] text-white
+          placeholder-hkf-mute p-2.5 rounded-md text-sm
+          focus:outline-none focus:border-hkf-green focus:shadow-glow transition"
+        />
+      </div>
 
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={formData.password}
-        onChange={handleChange}
-        className="bg-gray-800 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-      />
+      <div>
+        <label htmlFor="reg-password" className="block text-xs text-hkf-mute mb-1.5">
+          Password
+        </label>
+        <input
+          id="reg-password"
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full bg-black/50 border border-[rgba(0,255,100,.15)] text-white
+          p-2.5 rounded-md text-sm
+          focus:outline-none focus:border-hkf-green focus:shadow-glow transition"
+        />
+      </div>
 
-      <input
-        type="password"
-        name="confirmPassword"
-        placeholder="Confirm Password"
-        value={formData.confirmPassword}
-        onChange={handleChange}
-        className="bg-gray-800 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-      />
+      <div>
+        <label htmlFor="confirmPassword" className="block text-xs text-hkf-mute mb-1.5">
+          Confirm password
+        </label>
+        <input
+          id="confirmPassword"
+          type="password"
+          name="confirmPassword"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          className="w-full bg-black/50 border border-[rgba(0,255,100,.15)] text-white
+          p-2.5 rounded-md text-sm
+          focus:outline-none focus:border-hkf-green focus:shadow-glow transition"
+        />
+      </div>
 
       <button
         type="submit"
-        className="bg-green-500 hover:bg-green-600 text-black font-semibold py-2 rounded-lg transition duration-300"
+        className="border border-hkf-green text-hkf-green font-semibold py-2.5 rounded-md
+        hover:bg-hkf-green hover:text-black transition duration-200"
       >
         Create Account
       </button>
-
     </form>
   );
 }

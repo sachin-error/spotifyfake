@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { PlayerContext } from "../context/PlayerContext";
-import { HiHeart, HiPlus } from "react-icons/hi2";
+import { Heart, Plus, Check } from "lucide-react";
 
 function LikedSongs() {
   const {
@@ -14,87 +14,71 @@ function LikedSongs() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [toast, setToast] = useState(null);
 
-  // Auto hide toast
   useEffect(() => {
     if (toast) {
-      const timer = setTimeout(() => {
-        setToast(null);
-      }, 2000);
+      const timer = setTimeout(() => setToast(null), 2000);
       return () => clearTimeout(timer);
     }
   }, [toast]);
 
   return (
-    <div className="text-white p-8 min-h-screen bg-black relative">
-
-      <h1 className="text-3xl font-bold mb-8">
-        ❤️ Liked Songs
+    <div className="text-white p-4 sm:p-6 md:p-8 min-h-screen relative">
+      <h1 className="flex items-center gap-3 text-2xl sm:text-3xl font-heading font-bold mb-6 md:mb-8">
+        <Heart className="text-red-400 fill-red-400" />
+        Liked Songs
       </h1>
 
       {likedSongs.length === 0 ? (
-        <p className="text-gray-400">
-          No liked songs yet.
-        </p>
+        <p className="text-hkf-mute text-sm">No liked songs yet</p>
       ) : (
         <div className="flex flex-col gap-3">
-
           {likedSongs.map((song) => (
             <div
               key={song.id}
               onClick={() => playSong(song)}
-              className="flex items-center justify-between 
-              bg-gray-900 p-4 rounded-lg hover:bg-gray-800 
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3
+              bg-hkf-card/70 border border-[rgba(0,255,100,.10)] p-3 sm:p-4 rounded-lg hover:border-hkf-green/50
               transition cursor-pointer relative"
             >
-
-              {/* LEFT SIDE */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 min-w-0">
                 <img
                   src={song.cover_image_url}
                   alt={song.title}
-                  className="w-16 h-16 rounded-md object-cover"
+                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-md object-cover border border-[rgba(0,255,100,.12)] shrink-0"
                 />
 
-                <div>
-                  <h3 className="font-semibold text-lg">
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-base sm:text-lg truncate">
                     {song.title}
                   </h3>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-xs sm:text-sm text-hkf-mute truncate">
                     {song.artist}
                   </p>
                 </div>
               </div>
 
-              {/* RIGHT SIDE */}
-              <div className="flex items-center gap-6 relative">
-
-                {/* Add To Playlist Button */}
+              <div className="flex items-center gap-4 sm:gap-6 relative shrink-0 self-end sm:self-auto">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setActiveDropdown(
-                      activeDropdown === song.id ? null : song.id
-                    );
+                    setActiveDropdown(activeDropdown === song.id ? null : song.id);
                   }}
-                  className="flex items-center gap-2 
-                  bg-gray-800 px-4 py-2 rounded-full 
-                  hover:bg-gray-700 transition text-sm"
+                  className="flex items-center gap-2
+                  border border-[rgba(0,255,100,.15)] px-3 sm:px-4 py-1.5 sm:py-2 rounded-full
+                  hover:border-hkf-green transition text-xs sm:text-sm text-hkf-green"
                 >
-                  <HiPlus />
-                  Add to Playlist
+                  <Plus size={14} />
+                  <span className="hidden xs:inline">Add to Playlist</span>
                 </button>
 
-                {/* Dropdown */}
                 {activeDropdown === song.id && (
                   <div
-                    className="absolute right-0 top-12 
-                    bg-gray-900 border border-gray-700 
-                    rounded-lg shadow-xl p-2 w-52 z-50"
+                    className="absolute right-0 top-12
+                    bg-hkf-bg2 border border-[rgba(0,255,100,.15)]
+                    rounded-lg shadow-glow p-2 w-52 z-50"
                   >
                     {playlists.length === 0 ? (
-                      <p className="text-gray-400 text-sm p-2">
-                        No playlists available
-                      </p>
+                      <p className="text-hkf-mute text-sm p-2">No playlists yet</p>
                     ) : (
                       playlists.map((playlist) => (
                         <div
@@ -102,12 +86,10 @@ function LikedSongs() {
                           onClick={(e) => {
                             e.stopPropagation();
                             addSongToPlaylist(playlist.id, song);
-                            setToast(
-                              `🎵 ${song.title} added successfully`
-                            );
+                            setToast(`${song.title} added successfully`);
                             setActiveDropdown(null);
                           }}
-                          className="p-2 rounded hover:bg-gray-800 cursor-pointer text-sm"
+                          className="p-2 rounded hover:bg-hkf-green/10 cursor-pointer text-sm truncate"
                         >
                           {playlist.name}
                         </div>
@@ -116,38 +98,34 @@ function LikedSongs() {
                   </div>
                 )}
 
-                {/* Unlike Button */}
-                <HiHeart
+                <Heart
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleLike(song);
                   }}
-                  className="text-red-500 text-2xl 
-                  hover:scale-110 transition cursor-pointer"
+                  size={20}
+                  className="text-red-400 fill-red-400 hover:scale-110 transition cursor-pointer sm:w-6 sm:h-6"
                 />
-
               </div>
             </div>
           ))}
-
         </div>
       )}
 
-      {/* 🌟 Glassmorphism Toast */}
-{toast && (
-  <div
-    className="fixed top-18 left-[60%] -translate-x-1/2 z-[9999]
-    backdrop-blur-lg bg-white/10 border border-white/20
-    text-white px-8 py-4 rounded-2xl shadow-2xl
-    flex items-center gap-3
-    animate-slideDown"
-  >
-    <span className="text-sm font-semibold tracking-wide">
-      {toast}
-    </span>
-  </div>
-)}
-
+      {toast && (
+        <div
+          className="fixed top-16 sm:top-18 left-1/2 sm:left-[60%] -translate-x-1/2 z-[9999]
+          bg-hkf-bg2 border border-[rgba(0,255,100,.25)] shadow-glow
+          text-hkf-green px-5 sm:px-8 py-3 sm:py-4 rounded-md
+          flex items-center gap-3 max-w-[90vw]
+          animate-slideDown"
+        >
+          <Check size={16} className="shrink-0" />
+          <span className="text-xs sm:text-sm font-semibold tracking-wide truncate">
+            {toast}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

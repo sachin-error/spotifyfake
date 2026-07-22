@@ -208,8 +208,10 @@ const removeSongFromPlaylist = (playlistId, songId) => {
         addRecentSearch,
         addSongToPlaylist,
         removeSongFromPlaylist,
-        createPlaylist,     
-        deletePlaylist  
+        createPlaylist,
+        deletePlaylist,
+        songQueue,
+        currentIndex
       }}
     >
       {children}

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 
 function LoginForm() {
   const [formData, setFormData] = useState({
@@ -20,68 +19,64 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex items-center justify-center h-full text-white">
-      <div className="bg-gray-900 p-8 rounded-xl w-96 shadow-xl border border-gray-800">
-        
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          Login to Hackify
-        </h2>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-
-          <div>
-            <Label htmlFor="email" value="Your Email" className="text-gray-300 mb-2 block" />
-            <TextInput
-              id="email"
-              type="email"
-              placeholder="name@gmail.com"
-              required
-              onChange={handleChange}
-              className="bg-gray-800 text-white"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="password" value="Your Password" className="text-gray-300 mb-2 block" />
-            <TextInput
-              id="password"
-              type="password"
-              required
-              onChange={handleChange}
-              className="bg-gray-800 text-white"
-            />
-          </div>
-
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2">
-              <Checkbox id="remember" />
-              <Label htmlFor="remember" className="text-gray-400">
-                Remember me
-              </Label>
-            </div>
-
-            <span className="text-green-500 hover:underline cursor-pointer">
-              Forgot password?
-            </span>
-          </div>
-
-          <Button
-            type="submit"
-            className="bg-green-500 hover:bg-green-600 text-black font-semibold transition duration-300"
-          >
-            Login
-          </Button>
-
-          <p className="text-sm text-gray-400 text-center">
-            Don’t have an account?{" "}
-            <span className="text-green-500 hover:underline cursor-pointer">
-              Sign Up
-            </span>
-          </p>
-
-        </form>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <div>
+        <label htmlFor="email" className="block text-xs text-hkf-mute mb-1.5">
+          &gt; email
+        </label>
+        <input
+          id="email"
+          type="email"
+          placeholder="name@gmail.com"
+          required
+          onChange={handleChange}
+          className="w-full bg-black/50 border border-[rgba(0,255,100,.15)] text-white
+          placeholder-hkf-mute px-3 py-2.5 rounded-md text-sm
+          focus:outline-none focus:border-hkf-green focus:shadow-glow transition"
+        />
       </div>
-    </div>
+
+      <div>
+        <label htmlFor="password" className="block text-xs text-hkf-mute mb-1.5">
+          &gt; password
+        </label>
+        <input
+          id="password"
+          type="password"
+          required
+          onChange={handleChange}
+          className="w-full bg-black/50 border border-[rgba(0,255,100,.15)] text-white
+          placeholder-hkf-mute px-3 py-2.5 rounded-md text-sm
+          focus:outline-none focus:border-hkf-green focus:shadow-glow transition"
+        />
+      </div>
+
+      <div className="flex items-center justify-between text-xs sm:text-sm gap-2 flex-wrap">
+        <label className="flex items-center gap-2 text-hkf-mute cursor-pointer">
+          <input id="remember" type="checkbox" className="accent-hkf-green w-4 h-4" />
+          Remember me
+        </label>
+
+        <span className="text-hkf-green hover:underline cursor-pointer">
+          Forgot password?
+        </span>
+      </div>
+
+      <button
+        type="submit"
+        className="border border-hkf-green text-hkf-green font-semibold py-2.5 rounded-md
+        hover:bg-hkf-green hover:text-black transition duration-200"
+      >
+        Log In
+      </button>
+
+      <p className="text-xs sm:text-sm text-hkf-mute text-center">
+        No account?{" "}
+        <span className="text-hkf-green hover:underline cursor-pointer">
+          Sign up
+        </span>
+      </p>
+    </form>
   );
 }
 

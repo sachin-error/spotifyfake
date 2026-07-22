@@ -1,131 +1,107 @@
-// import { useState } from "react";
-// import { HiHome, HiMagnifyingGlass, HiClock } from "react-icons/hi2";
-
-// function LeftSidebar() {
-//   const [recentSearches] = useState([
-//     { title: "Arabic Kuthu", artist: "Anirudh" },
-//     { title: "Blinding Lights", artist: "The Weeknd" },
-//     { title: "Kesariya", artist: "Arijit Singh" },
-//     { title: "Malare", artist: "Vijay Yesudas" },
-//   ]);
-
-//   return (
-//     <div
-//     className="fixed left-0 top-16 h-[calc(100vh-5rem)] w-40 
-//     bg-gradient-to-b from-black via-gray-900 to-black 
-//     border-l border-gray-800 p-4 text-white overflow-y-auto">
-
-      
-//       {/* Top Navigation */}
-//       <div className="space-y-4 mb-8">
-//         <div className="flex items-center gap-3 hover:text-white text-gray-400 cursor-pointer transition">
-//           <HiHome className="text-xl" />
-//           <span className="font-medium">Home</span>
-//         </div>
-
-//         <div className="flex items-center gap-3 hover:text-white text-gray-400 cursor-pointer transition">
-//           <HiMagnifyingGlass className="text-xl" />
-//           <span className="font-medium">Search</span>
-//         </div>
-//       </div>
-
-//       {/* Divider */}
-//       <div className="border-t border-gray-800 my-4"></div>
-
-//       {/* Recently Searched */}
-//       <div className="flex items-center gap-2 mb-4">
-//         <HiClock className="text-gray-400" />
-//         <h2 className="text-sm font-semibold text-gray-300">
-//           Recently Searched
-//         </h2>
-//       </div>
-
-//       {/* List */}
-//       <div className="flex flex-col gap-3 overflow-y-auto">
-//         {recentSearches.map((song, index) => (
-//           <div
-//             key={index}
-//             className="hover:bg-gray-800 p-2 rounded-md cursor-pointer transition"
-//           >
-//             <p className="text-sm font-medium">{song.title}</p>
-//             <p className="text-xs text-gray-400">{song.artist}</p>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default LeftSidebar;
-
-
-
 import { useContext } from "react";
-import { HiHome, HiMagnifyingGlass, HiClock } from "react-icons/hi2";
+import {
+  Home,
+  Heart,
+  History,
+  Mic2,
+  Disc3,
+  ListMusic,
+  Plus,
+  Star,
+} from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { PlayerContext } from "../../context/PlayerContext";
+import SidebarItem from "./SidebarItem";
 
-function LeftSidebar() {
+function LeftSidebar({ variant = "desktop", onNavigate = () => {} }) {
+  const { playlists } = useContext(PlayerContext);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const { recentSearches, playSong } = useContext(PlayerContext);
+  const isMobile = variant === "mobile";
+
+  const go = (path) => {
+    navigate(path);
+    onNavigate();
+  };
 
   return (
     <div
-      className="fixed left-0 top-16 h-[calc(100vh-5rem)] w-40 
-      bg-gradient-to-b from-black via-gray-900 to-black 
-      border-l border-gray-800 p-4 text-white overflow-y-auto">
+      className={
+        isMobile
+          ? "w-full p-4"
+          : "hidden lg:flex flex-col fixed left-0 top-14 md:top-16 h-[calc(100vh-3.5rem)] md:h-[calc(100vh-4rem)] w-56 xl:w-60 \
+          bg-hkf-bg2/60 border-r border-[rgba(0,255,100,.10)] p-4 \
+          overflow-y-auto modern-scroll"
+      }
+    >
+      <p className="text-[11px] font-heading font-semibold tracking-widest uppercase text-hkf-mute mb-3 px-1">
+        Your Library
+      </p>
 
-      {/* Top Navigation */}
-      <div className="space-y-4 mb-8">
-        <div className="flex items-center gap-3 hover:text-white text-gray-400 cursor-pointer transition">
-          <HiHome className="text-xl" />
-          <span className="font-medium">Home</span>
-        </div>
-
-        <div className="flex items-center gap-3 hover:text-white text-gray-400 cursor-pointer transition">
-          <HiMagnifyingGlass className="text-xl" />
-          <span className="font-medium">Search</span>
-        </div>
+      <div className="space-y-1 mb-4">
+        <SidebarItem
+          icon={Home}
+          label="Home"
+          active={location.pathname === "/"}
+          onClick={() => go("/")}
+        />
+        <SidebarItem
+          icon={Heart}
+          label="Liked Songs"
+          active={location.pathname === "/liked"}
+          onClick={() => go("/liked")}
+        />
+        <SidebarItem
+          icon={History}
+          label="Recently Played"
+          onClick={() => go("/")}
+        />
+        <SidebarItem icon={Mic2} label="Artists" disabled soon />
+        <SidebarItem icon={Disc3} label="Albums" disabled soon />
       </div>
 
-      {/* Divider */}
-      <div className="border-t border-gray-800 my-4"></div>
+      <div className="border-t border-[rgba(0,255,100,.10)] my-3" />
 
-      {/* Recently Searched */}
-      <div className="flex items-center gap-2 mb-4">
-        <HiClock className="text-gray-400" />
-        <h2 className="text-sm font-semibold text-gray-300">
-          Recently Searched
-        </h2>
+      <div className="flex items-center justify-between px-1 mb-2">
+        <p className="text-[11px] font-heading font-semibold tracking-widest uppercase text-hkf-mute">
+          Playlists
+        </p>
+        <button
+          onClick={() => go("/playlists")}
+          className="p-1 rounded border border-[rgba(0,255,100,.15)] hover:bg-hkf-green/10 transition"
+          aria-label="Manage playlists"
+          title="Manage playlists"
+        >
+          <Plus size={13} className="text-hkf-green" />
+        </button>
       </div>
 
-      {/* List */}
-      <div className="flex flex-col gap-3">
-        {recentSearches.length === 0 ? (
-          <p className="text-xs text-gray-500">
-            No recent searches
-          </p>
+      <div className="space-y-1 mb-4">
+        {playlists.length === 0 ? (
+          <p className="text-xs text-hkf-mute px-3">No playlists yet</p>
         ) : (
-          recentSearches.map((song) => (
-            <div
-              key={song.id}
-              onClick={() => playSong(song)}
-              className="flex items-center gap-2 
-              hover:bg-gray-800 p-2 rounded-md 
-              cursor-pointer transition"
-            >
-              <img
-                src={song.cover_image_url}
-                alt={song.title}
-                className="w-8 h-8 rounded object-cover"
-              />
-              <div>
-                <p className="text-xs font-medium line-clamp-2 leading-tight">
-                  {song.title}
-                </p>
-              </div>
-            </div>
+          playlists.map((pl) => (
+            <SidebarItem
+              key={pl.id}
+              icon={ListMusic}
+              label={pl.name}
+              active={location.pathname === `/playlists/${pl.id}`}
+              onClick={() => go(`/playlists/${pl.id}`)}
+            />
           ))
         )}
+      </div>
+
+      <div className="border-t border-[rgba(0,255,100,.10)] my-3" />
+
+      <div className="space-y-1">
+        <SidebarItem
+          icon={Star}
+          label="Favorites"
+          active={location.pathname === "/liked"}
+          onClick={() => go("/liked")}
+        />
       </div>
     </div>
   );
